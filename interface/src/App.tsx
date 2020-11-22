@@ -10,6 +10,8 @@ import CustomMuiTheme from './CustomMuiTheme';
 import { PROJECT_NAME } from './api';
 import FeaturesWrapper from './features/FeaturesWrapper';
 
+import './App.css';
+
 // this redirect forces a call to authenticationContext.refresh() which invalidates the JWT if it is invalid.
 const unauthorizedRedirect = () => <Redirect to="/" />;
 
