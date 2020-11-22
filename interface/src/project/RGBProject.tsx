@@ -9,8 +9,8 @@ import { AuthenticatedRoute } from '../authentication';
 
 import RGBInformation from './RGBInformation';
 import RGBWebSocketController from './RGBWebSocketController';
-import LightStateWebSocketController from './LightStateWebSocketController';
 
+import LightStateWebSocketController from './LightStateWebSocketController';
 import LightMqttSettingsController from './LightMqttSettingsController';
 
 class RGBProject extends Component<RouteComponentProps> {

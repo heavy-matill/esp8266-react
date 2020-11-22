@@ -12,11 +12,11 @@ class ProjectMenu extends Component<RouteComponentProps> {
     const path = this.props.match.url;
     return (
       <List>
-        <ListItem to={`/${PROJECT_PATH}/demo/`} selected={path.startsWith(`/${PROJECT_PATH}/demo/`)} button component={Link}>
+        <ListItem to={`/${PROJECT_PATH}/rgb/`} selected={path.startsWith(`/${PROJECT_PATH}/rgb/`)} button component={Link}>
           <ListItemIcon>
             <SettingsRemoteIcon />
           </ListItemIcon>
-          <ListItemText primary="Demo Project" />
+          <ListItemText primary="RGB Project" />
         </ListItem>
       </List>
     )
