@@ -21,7 +21,7 @@
 #define RGB_SETTINGS_ENDPOINT_PATH "/rest/rgbState"
 #define RGB_SETTINGS_SOCKET_PATH "/ws/rgbState"
 #define RGB_SETTINGS_FILE "/config/rgbSettings.json"
-
+typedef void (*voidCmdProcessor)(String &cmd);// Create a type to point to a funciton.
 void setColor(uint8_t r, uint8_t g, uint8_t b);
 class RGBState {
  public:
@@ -29,6 +29,9 @@ class RGBState {
   uint8_t brightness;
   uint8_t r1, g1, b1;
   uint8_t r2, g2, b2;
+  uint16_t angle;
+  uint8_t thres;
+  String cmdString;
 
   static void read(RGBState& settings, JsonObject& root) {
     root["cmd"] = settings.cmd;
@@ -40,6 +43,8 @@ class RGBState {
     root["c2"]["r"] = settings.r2;
     root["c2"]["g"] = settings.g2;
     root["c2"]["b"] = settings.b2;
+    root["angle"]= settings.angle;
+    root["thres"]= settings.thres;
     Serial.println("read root:");
     serializeJsonPretty(root, Serial);
     Serial.println();
@@ -78,6 +83,8 @@ class RGBState {
     settings.r2 = root["c2"]["r"] | DEFAULT_OFF_STATE;
     settings.g2 = root["c2"]["g"] | DEFAULT_OFF_STATE;
     settings.b2 = root["c2"]["b"] | DEFAULT_OFF_STATE;
+    settings.angle = root["angle"] | DEFAULT_OFF_STATE;
+    settings.thres = root["thres"] | DEFAULT_OFF_STATE;
     return StateUpdateResult::CHANGED;
   }
 
@@ -119,14 +126,13 @@ class RGBStateService : public StatefulService<RGBState> {
                   AsyncMqttClient* mqttClient,
                   RGBMqttSettingsService* rgbMqttSettingsService);
   void begin();
-
  private:
   HttpEndpoint<RGBState> _httpEndpoint;
   MqttPubSub<RGBState> _mqttPubSub;
   WebSocketTxRx<RGBState> _webSocket;
   AsyncMqttClient* _mqttClient;
   RGBMqttSettingsService* _rgbMqttSettingsService;
-  FSPersistence<RGBState> _fsPersistence;
+  FSPersistence<RGBState> _fsPersistence;  
 
   void registerConfig();
   void onConfigUpdated();

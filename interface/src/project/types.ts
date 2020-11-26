@@ -7,6 +7,8 @@ export interface RGB {
   brightness: number
   c1: Color;
   c2: Color;
+  angle?: number;
+  thres?: number;
 }
 export interface Color {
   r: number;

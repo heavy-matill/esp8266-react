@@ -47,7 +47,19 @@ function RGBWebSocketControllerForm(props: RGBWebSocketControllerFormProps) {
   const changeBrightness = (event: React.ChangeEvent<{}>, value: any) => {
     console.log("changeBrightness", event, value)
     data.mode = 0;
-    data.mode = value;
+    data.brightness = value;
+    setData(data, saveData); // , c1: whiteColor(value)
+  }
+  const changeAngle = (event: React.ChangeEvent<{}>, value: any) => {
+    console.log("changeAngle", event, value)
+    data.mode = 3;
+    data.angle = value;
+    setData(data, saveData); // , c1: whiteColor(value)
+  }
+  const changeThres = (event: React.ChangeEvent<{}>, value: any) => {
+    console.log("changeThres", event, value)
+    data.mode = 3;
+    data.thres = value;
     setData(data, saveData); // , c1: whiteColor(value)
   }
   const changeColor = (event: any, key?: String) => {
@@ -75,6 +87,14 @@ function RGBWebSocketControllerForm(props: RGBWebSocketControllerFormProps) {
   }
   const load = (event: any) => {
     data.cmd=251;
+    setData(data, saveData);
+  }
+  const animate = (event: any) => {
+    data.cmd=248;
+    setData(data, saveData);
+  }
+  const doOther = (event: any) => {
+    data.cmd=249;
     setData(data, saveData);
   }
   return (
@@ -132,11 +152,40 @@ function RGBWebSocketControllerForm(props: RGBWebSocketControllerFormProps) {
           onChange={(e) => changeColor(e, 'c2')}
         /></Typography>
 
+        
+      <Typography variant="body1">
+        Angle
+        </Typography>
+      <Slider
+        max={360}
+        defaultValue={data.angle}
+        valueLabelDisplay="auto"
+        color="primary"
+        onChange={changeAngle}
+      />
+      
+      <Typography variant="body1">
+        thres
+        </Typography>
+      <Slider
+        max={5}
+        defaultValue={data.thres}
+        valueLabelDisplay="auto"
+        color="primary"
+        onChange={changeThres}
+      />
+
 <Button startIcon={<SaveIcon />} variant="contained" color="primary" onClick={save}>
           Save
         </Button>
         <Button startIcon={<SaveIcon />} variant="contained" color="primary" onClick={load}>
           Load
+        </Button>
+        <Button startIcon={<SaveIcon />} variant="contained" color="primary" onClick={animate}>
+          Animate
+        </Button>
+        <Button startIcon={<SaveIcon />} variant="contained" color="primary" onClick={doOther}>
+          249
         </Button>
 
     </ValidatorForm>
