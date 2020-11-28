@@ -8,7 +8,8 @@ export interface RGB {
   c1: Color;
   c2: Color;
   angle?: number;
-  thres?: number;
+  blur?: number;
+  center?: number;
 }
 export interface Color {
   r: number;

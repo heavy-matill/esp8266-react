@@ -30,7 +30,7 @@ class RGBState {
   uint8_t r1, g1, b1;
   uint8_t r2, g2, b2;
   int16_t angle;
-  uint8_t thres;
+  uint8_t thres, center, blur;
   String cmdString;
 
   static void read(RGBState& settings, JsonObject& root) {
@@ -45,6 +45,8 @@ class RGBState {
     root["c2"]["b"] = settings.b2;
     root["angle"]= settings.angle;
     root["thres"]= settings.thres;
+    root["center"]= settings.center;
+    root["blur"]= settings.blur;
     Serial.println("read root:");
     serializeJsonPretty(root, Serial);
     Serial.println();
@@ -85,6 +87,8 @@ class RGBState {
     settings.b2 = root["c2"]["b"] | DEFAULT_OFF_STATE;
     settings.angle = root["angle"] | DEFAULT_OFF_STATE;
     settings.thres = root["thres"] | DEFAULT_OFF_STATE;
+    settings.blur = root["blur"] | DEFAULT_OFF_STATE;
+    settings.center = root["center"] | 50;
     return StateUpdateResult::CHANGED;
   }
 

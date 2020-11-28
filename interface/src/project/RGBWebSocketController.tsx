@@ -56,10 +56,16 @@ function RGBWebSocketControllerForm(props: RGBWebSocketControllerFormProps) {
     data.angle = value;
     setData(data, saveData); // , c1: whiteColor(value)
   }
-  const changeThres = (event: React.ChangeEvent<{}>, value: any) => {
-    console.log("changeThres", event, value)
+  const changeBlur = (event: React.ChangeEvent<{}>, value: any) => {
+    console.log("changeBlur", event, value)
     data.mode = 3;
-    data.thres = value;
+    data.blur = value;
+    setData(data, saveData); // , c1: whiteColor(value)
+  }
+  const changeCenter = (event: React.ChangeEvent<{}>, value: any) => {
+    console.log("changeCenter", event, value)
+    data.mode = 3;
+    data.center = value;
     setData(data, saveData); // , c1: whiteColor(value)
   }
   const changeColor = (event: any, key?: String) => {
@@ -165,14 +171,24 @@ function RGBWebSocketControllerForm(props: RGBWebSocketControllerFormProps) {
       />
       
       <Typography variant="body1">
-        thres
+        Blur
         </Typography>
       <Slider
-        max={5}
-        defaultValue={data.thres}
+        max={100}
+        defaultValue={data.blur}
         valueLabelDisplay="auto"
         color="primary"
-        onChange={changeThres}
+        onChange={changeBlur}
+      />
+      <Typography variant="body1">
+        Center
+        </Typography>
+      <Slider
+        max={100}
+        defaultValue={data.center}
+        valueLabelDisplay="auto"
+        color="primary"
+        onChange={changeCenter}
       />
 
 <Button startIcon={<SaveIcon />} variant="contained" color="primary" onClick={save}>

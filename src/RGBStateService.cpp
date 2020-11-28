@@ -109,9 +109,10 @@ CRGB interpCol(CRGB& c1, CRGB& c2, float v, float thres) {
   }
 }
 
-void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, float thres) {
-  float x_mid = (NUM_X - 1) / 2.0;
-  float y_mid = (NUM_Y - 1) / 2.0;
+void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, uint8_t percBlur, uint8_t percCenter) {
+  float x_mid = (float)NUM_X * (float)percCenter / 100;
+  float y_mid = (float)NUM_Y * (float)percCenter / 100;
+  float thres = (float)percBlur / 100;
   if (angle > 135) {
     angle -= 180;
     if (angle <= 135) {
@@ -126,8 +127,8 @@ void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, float thres) {
 
   if ((-45 < angle) && (angle <= 45)) {
     double angleD = angle / 180.0 * PI;
-    thres /= cos(angleD);
     double tanPart = tan(-angleD);
+    thres *= (float)(NUM_Y + NUM_X * fabs(tanPart))/2;  /// cos(angleD);
 
     for (uint8_t x = 0; x < NUM_X; x++) {
       float y_lim = y_mid + (x - x_mid) * tanPart;
@@ -138,9 +139,9 @@ void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, float thres) {
   } else {
     if ((45 < angle) && (angle <= 135)) {
       angle -= 90;
-      double angleD = angle / 180.0 * PI;
-      thres /= cos(angleD);
-      double tanPart = tan(angleD);
+      double angleD = angle / 180.0 * PI;  // thres /= cos(angleD);
+      double tanPart = tan(angleD);      
+      thres *= (float)(NUM_X + NUM_Y * fabs(tanPart))/2;  /// cos(angleD);
 
       for (uint8_t y = 0; y < NUM_Y; y++) {
         float x_lim = x_mid + (y - y_mid) * tanPart;
@@ -148,11 +149,15 @@ void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, float thres) {
           leds[XY(x, y)] = interpCol(c1, c2, x - x_lim, thres);
         }
       }
-    } else {
-      Serial.print("error with angle: ");
-      Serial.println(angle);
     }
   }
+
+  Serial.print("thres ");
+  Serial.println(thres);
+  Serial.print("xmid ");
+  Serial.println(x_mid);
+  Serial.print("ymid ");
+  Serial.println(y_mid);
 }
 
 RGBStateService::RGBStateService(AsyncWebServer* server,
@@ -261,7 +266,7 @@ void RGBStateService::onConfigUpdated() {
       // C2
       CRGB c1 = CRGB(_state.r1, _state.g1, _state.b1);
       CRGB c2 = CRGB(_state.r2, _state.g2, _state.b2);
-      fillSplit(c1, c2, _state.angle, _state.thres);
+      fillSplit(c1, c2, _state.angle, _state.blur, _state.center);
       FastLED.show();
       break;
   }
