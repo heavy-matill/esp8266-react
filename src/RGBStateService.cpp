@@ -98,30 +98,59 @@ uint16_t XYsafe(uint8_t x, uint8_t y) {
   return XY(x, y);
 }
 
-
-CRGB interpCol(CRGB& c1, CRGB& c2, float v, uint8_t thres) {  
-  Serial.print("interpCol ");
-  Serial.println(v);
-  Serial.println(thres);
+CRGB interpCol(CRGB& c1, CRGB& c2, float v, float thres) {
   if (v < -thres)
     return c1;
-  if (v > thres)
+  if (v > thres || thres == 0)
     return c2;
   else {
-    fract8 amountOfC2 = (fract8)(v / (double)thres + 1.0) / 2.0;
+    fract8 amountOfC2 = (fract8)((v / thres + (float)1) * (float)127.5);
     return blend(c1, c2, amountOfC2);
   }
 }
 
-void fillSplit(CRGB& c1, CRGB& c2, uint16_t angle, uint8_t thres) {
+void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, float thres) {
   float x_mid = (NUM_X - 1) / 2.0;
   float y_mid = (NUM_Y - 1) / 2.0;
-  
-  for (uint8_t x = 0; x < NUM_X; x++) {
-        float y_lim = y_mid + ((float)x-x_mid) * tan((double)angle/360.0*PI);
-        Serial.println(y_lim);
-    for (uint8_t y = 0; y < NUM_Y; y++) {
-      leds[XY(x, y)] = interpCol(c1, c2, y-y_lim, thres);
+  if (angle > 135) {
+    angle -= 180;
+    if (angle <= 135) {
+      CRGB cTemp = CRGB();
+      cTemp = c1;
+      c1 = c2;
+      c2 = cTemp;
+    } else {
+      angle -= 180;
+    }
+  }
+
+  if ((-45 < angle) && (angle <= 45)) {
+    double angleD = angle / 180.0 * PI;
+    thres /= cos(angleD);
+    double tanPart = tan(-angleD);
+
+    for (uint8_t x = 0; x < NUM_X; x++) {
+      float y_lim = y_mid + (x - x_mid) * tanPart;
+      for (uint8_t y = 0; y < NUM_Y; y++) {
+        leds[XY(x, y)] = interpCol(c1, c2, y - y_lim, thres);
+      }
+    }
+  } else {
+    if ((45 < angle) && (angle <= 135)) {
+      angle -= 90;
+      double angleD = angle / 180.0 * PI;
+      thres /= cos(angleD);
+      double tanPart = tan(angleD);
+
+      for (uint8_t y = 0; y < NUM_Y; y++) {
+        float x_lim = x_mid + (y - y_mid) * tanPart;
+        for (uint8_t x = 0; x < NUM_X; x++) {
+          leds[XY(x, y)] = interpCol(c1, c2, x - x_lim, thres);
+        }
+      }
+    } else {
+      Serial.print("error with angle: ");
+      Serial.println(angle);
     }
   }
 }

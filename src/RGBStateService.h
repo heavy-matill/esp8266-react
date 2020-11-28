@@ -29,7 +29,7 @@ class RGBState {
   uint8_t brightness;
   uint8_t r1, g1, b1;
   uint8_t r2, g2, b2;
-  uint16_t angle;
+  int16_t angle;
   uint8_t thres;
   String cmdString;
 
