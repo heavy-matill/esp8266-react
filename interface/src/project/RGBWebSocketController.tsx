@@ -51,8 +51,7 @@ type RGBWebSocketControllerFormProps = WebSocketFormProps<RGB>;
 function RGBWebSocketControllerFormMode(props: RGBWebSocketControllerFormProps) {
   const { data, saveData, setData } = props;
   const changeMode = (event: React.ChangeEvent<{}>, value: any) => {
-    data.mode = value;
-    setData(data, saveData);
+    setData({mode: value});
   }
   return (
     <ValidatorForm onSubmit={saveData}>
@@ -104,12 +103,11 @@ function RGBWebSocketControllerFormText(props: RGBWebSocketControllerFormProps) 
 }
 
 function RGBWebSocketControllerFormColor1(props: RGBWebSocketControllerFormProps) {
-  const { data, saveData, setData } = props;
+  const { data, saveData, setData} = props;
   const changeColor1 = (event: any) => {
     console.log("changeColor1")
     let rgb = decomposeColor(event.target.value).values;
-    data.c1 = { r: rgb[0], g: rgb[1], b: rgb[2] };
-    setData(data, saveData);
+    setData({c1: { r: rgb[0], g: rgb[1], b: rgb[2] }});
   }
   return (
     <ValidatorForm onSubmit={saveData}>
@@ -119,15 +117,12 @@ function RGBWebSocketControllerFormColor1(props: RGBWebSocketControllerFormProps
       <Typography
         style={{
           backgroundColor:
-            rgbToHex("rgb(" + [data.c1.r, data.c1.g, data.c1.b].join(',') + ")"),
+            "rgb(" + [data.c1!.r , data.c1!.g, data.c1!.b].join(',') + ")",
         }}>
         <Input
           id="c1"
           type="color"
           fullWidth={true}
-          value={
-            rgbToHex("rgb(" + [data.c1.r, data.c1.g, data.c1.b].join(',') + ")")
-          }
           onChange={changeColor1}
         /></Typography>
     </ValidatorForm>
@@ -139,8 +134,7 @@ function RGBWebSocketControllerFormColor2(props: RGBWebSocketControllerFormProps
   const changeColor2 = (event: any) => {
     console.log("changeColor2")
     let rgb = decomposeColor(event.target.value).values;
-    data.c2 = { r: rgb[0], g: rgb[1], b: rgb[2] };
-    setData(data, saveData);
+    setData({c2: { r: rgb[0], g: rgb[1], b: rgb[2] }});
   }
   return (
     <ValidatorForm onSubmit={saveData}>
@@ -150,15 +144,12 @@ function RGBWebSocketControllerFormColor2(props: RGBWebSocketControllerFormProps
       <Typography
         style={{
           backgroundColor:
-            rgbToHex("rgb(" + [data.c2.r, data.c2.g, data.c2.b].join(',') + ")"),
+          "rgb(" + [data.c2!.r , data.c2!.g, data.c2!.b].join(',') + ")",
         }}>
         <Input
           id="c2"
           type="color"
           fullWidth={true}
-          value={
-            rgbToHex("rgb(" + [data.c2.r, data.c2.g, data.c2.b].join(',') + ")")
-          }
           onChange={changeColor2}
         /></Typography>
     </ValidatorForm>
@@ -166,22 +157,19 @@ function RGBWebSocketControllerFormColor2(props: RGBWebSocketControllerFormProps
 }
 
 function RGBWebSocketControllerFormGradient(props: RGBWebSocketControllerFormProps) {
-  const { data, saveData, setData } = props;
+  const { data, saveData, setData} = props;
 
   const changeAngle = (event: React.ChangeEvent<{}>, value: any) => {
     console.log("changeAngle", event, value)
-    data.angle = value;
-    setData(data, saveData); // , c1: whiteColor(value)
+    setData({angle: value});
   }
   const changeBlur = (event: React.ChangeEvent<{}>, value: any) => {
     console.log("changeBlur", event, value)
-    data.blur = value;
-    setData(data, saveData); // , c1: whiteColor(value)
+    setData({blur: value});
   }
   const changeCenter = (event: React.ChangeEvent<{}>, value: any) => {
     console.log("changeCenter", event, value)
-    data.center = value;
-    setData(data, saveData); // , c1: whiteColor(value)
+    setData({center: value});
   }
 
   return (

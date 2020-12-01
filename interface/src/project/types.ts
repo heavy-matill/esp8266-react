@@ -5,9 +5,9 @@ export interface RGB {
   cmd?: number;
   mode?: number;
   modeString?: string;
-  brightness: number
-  c1: Color;
-  c2: Color;
+  brightness?: number
+  c1?: Color;
+  c2?: Color;
   angle?: number;
   blur?: number;
   center?: number;
