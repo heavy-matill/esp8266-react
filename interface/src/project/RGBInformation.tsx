@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {RouteComponentProps} from 'react-router';
 import { Typography, Box, List, ListItem, ListItemText, Slider } from '@material-ui/core';
 import { SectionContent } from '../components';
 import { WEB_SOCKET_ROOT } from '../api';
@@ -10,11 +11,15 @@ type RGB = {
   colString2?: string;
 }
 
-class RGBInformation extends Component<{}, RGB> {
+type testLocalProps = {
+  modestring: string;
+}
+
+class RGBInformation extends Component<RGB & RouteComponentProps<testLocalProps>, RGB> {
   
-  constructor(props: RGB) {
+  constructor(props: RGB & RouteComponentProps<testLocalProps>) {
     super(props);
-    this.state = {brightness: 255};
+    this.state = {brightness: 255}; // only rendered at frist time: , mode: parseInt(this.props.match.params.modestring)
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -37,6 +42,14 @@ class RGBInformation extends Component<{}, RGB> {
         <Typography variant="body1" paragraph>
           You can control the light.
         </Typography>
+        
+        
+        <Typography variant="body1" paragraph>{this.props.match.params.modestring}
+        </Typography>
+        {this.props.match.params.modestring == "1" && <Typography variant="body1" paragraph>this text will be shown if it is one
+        </Typography>}
+        {this.props.match.params.modestring == "123" && <Typography variant="body1" paragraph>this text will be shown if it is hundred and twenty three
+        </Typography>}
 
         <Typography variant="body1">
           Brightness: {this.state.brightness}

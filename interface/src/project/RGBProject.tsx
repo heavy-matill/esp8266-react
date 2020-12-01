@@ -23,14 +23,16 @@ class RGBProject extends Component<RouteComponentProps> {
     return (
       <MenuAppBar sectionTitle="RGB Project">
         <Tabs value={this.props.match.url} onChange={this.handleTabChange} variant="fullWidth">
-          <Tab value={`/${PROJECT_PATH}/rgb/inforgb`} label="RGB Info" />
-          <Tab value={`/${PROJECT_PATH}/rgb/socket`} label="WebSocket Controller" />
-          <Tab value={`/${PROJECT_PATH}/rgb/lsocket`} label="Light Controller" />
+          <Tab value={`/${PROJECT_PATH}/rgb/inforgb/123`} label="RGB Info" />
+          <Tab value={`/${PROJECT_PATH}/rgb/socket/single`} label="RGB" />
+          <Tab value={`/${PROJECT_PATH}/rgb/socket/dual`} label="RGB Dual" />
+          <Tab value={`/${PROJECT_PATH}/rgb/socket/text`} label="RGB Text" />
+          <Tab value={`/${PROJECT_PATH}/rgb/socket/special`} label="RGB Special" />
           <Tab value={`/${PROJECT_PATH}/rgb/mqtt`} label="MQTT Controller" />
         </Tabs>
         <Switch>
-          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/inforgb`} component={RGBInformation} />
-          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/socket`} component={RGBWebSocketController} />
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/inforgb/:modestring`} component={RGBInformation} />
+          <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/socket/:modeString`} component={RGBWebSocketController} />
           <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/lsocket`} component={LightStateWebSocketController} />
           <AuthenticatedRoute exact path={`/${PROJECT_PATH}/rgb/mqtt`} component={LightMqttSettingsController} />
           <Redirect to={`/${PROJECT_PATH}/rgb/information`} />

@@ -10,6 +10,9 @@
 #define NUM_X 15
 #define NUM_Y 5
 #define NUM_LEDS NUM_X* NUM_Y
+/*#define NUM_X 4
+#define NUM_Y 5
+#define NUM_LEDS 10*/
 CRGB leds[NUM_LEDS];
 // Params for width and height
 const uint8_t kMatrixWidth = 15;
@@ -109,7 +112,7 @@ CRGB interpCol(CRGB& c1, CRGB& c2, float v, float thres) {
   }
 }
 
-void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, uint8_t percBlur, uint8_t percCenter) {
+void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, uint8_t percBlur, uint8_t percCenter, uint8_t* points) {
   float x_mid = (float)NUM_X * (float)percCenter / 100;
   float y_mid = (float)NUM_Y * (float)percCenter / 100;
   float thres = (float)percBlur / 100;
@@ -128,36 +131,43 @@ void fillSplit(CRGB& c1, CRGB& c2, int16_t angle, uint8_t percBlur, uint8_t perc
   if ((-45 < angle) && (angle <= 45)) {
     double angleD = angle / 180.0 * PI;
     double tanPart = tan(-angleD);
-    thres *= (float)(NUM_Y + NUM_X * fabs(tanPart))/2;  /// cos(angleD);
+    thres *= (float)(NUM_Y + NUM_X * fabs(tanPart)) / 2;  /// cos(angleD);
 
-    for (uint8_t x = 0; x < NUM_X; x++) {
-      float y_lim = y_mid + (x - x_mid) * tanPart;
-      for (uint8_t y = 0; y < NUM_Y; y++) {
-        leds[XY(x, y)] = interpCol(c1, c2, y - y_lim, thres);
+    if (points) {
+      for (uint8_t i = 0; i < NUM_LEDS; i++) {
+        float y_lim = y_mid + (points[i * 2] - x_mid) * tanPart;
+        leds[i] = interpCol(c1, c2, points[i * 2 + 1] - y_lim, thres);
+      }
+    } else {
+      for (uint8_t x = 0; x < NUM_X; x++) {
+        float y_lim = y_mid + (x - x_mid) * tanPart;
+        for (uint8_t y = 0; y < NUM_Y; y++) {
+          leds[XY(x, y)] = interpCol(c1, c2, y - y_lim, thres);
+        }
       }
     }
   } else {
     if ((45 < angle) && (angle <= 135)) {
       angle -= 90;
       double angleD = angle / 180.0 * PI;  // thres /= cos(angleD);
-      double tanPart = tan(angleD);      
-      thres *= (float)(NUM_X + NUM_Y * fabs(tanPart))/2;  /// cos(angleD);
+      double tanPart = tan(angleD);
+      thres *= (float)(NUM_X + NUM_Y * fabs(tanPart)) / 2;  /// cos(angleD);
 
-      for (uint8_t y = 0; y < NUM_Y; y++) {
-        float x_lim = x_mid + (y - y_mid) * tanPart;
-        for (uint8_t x = 0; x < NUM_X; x++) {
-          leds[XY(x, y)] = interpCol(c1, c2, x - x_lim, thres);
+      if (points) {
+        for (uint8_t i = 0; i < NUM_LEDS; i++) {
+          float x_lim = x_mid + (points[i * 2 + 1] - y_mid) * tanPart;
+          leds[i] = interpCol(c1, c2, points[i * 2] - x_lim, thres);
+        }
+      } else {
+        for (uint8_t y = 0; y < NUM_Y; y++) {
+          float x_lim = x_mid + (y - y_mid) * tanPart;
+          for (uint8_t x = 0; x < NUM_X; x++) {
+            leds[XY(x, y)] = interpCol(c1, c2, x - x_lim, thres);
+          }
         }
       }
     }
   }
-
-  Serial.print("thres ");
-  Serial.println(thres);
-  Serial.print("xmid ");
-  Serial.println(x_mid);
-  Serial.print("ymid ");
-  Serial.println(y_mid);
 }
 
 RGBStateService::RGBStateService(AsyncWebServer* server,
@@ -264,9 +274,18 @@ void RGBStateService::onConfigUpdated() {
       break;
     case 3:
       // C2
+      break;
+      ///CRGB c1 = CRGB(_state.r1, _state.g1, _state.b1);
+      //CRGB c2 = CRGB(_state.r2, _state.g2, _state.b2);
+      //fillSplit(c1, c2, _state.angle, _state.blur, _state.center, nullptr);
+      //FastLED.show();
+      break;
+    case 4:
+      // C2
       CRGB c1 = CRGB(_state.r1, _state.g1, _state.b1);
       CRGB c2 = CRGB(_state.r2, _state.g2, _state.b2);
-      fillSplit(c1, c2, _state.angle, _state.blur, _state.center);
+      //uint8_t pointsk[20] = {0,0,0,1,0,2,0,3,0,4,1,1,2,2,3,3,3,1,4,0}; 
+      fillSplit(c1, c2, _state.angle, _state.blur, _state.center, nullptr);
       FastLED.show();
       break;
   }
