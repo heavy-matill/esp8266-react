@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ValidatorForm } from 'react-material-ui-form-validator';
 
-import { Typography, Box, Switch } from '@material-ui/core';
+import { Typography, Box, Switch, Slider, Button } from '@material-ui/core';
 import { WEB_SOCKET_ROOT } from '../api';
 import { WebSocketControllerProps, WebSocketFormLoader, WebSocketFormProps, webSocketController } from '../components';
 import { SectionContent, BlockFormControlLabel } from '../components';
@@ -35,9 +35,32 @@ type LightStateWebSocketControllerFormProps = WebSocketFormProps<LightState>;
 
 function LightStateWebSocketControllerForm(props: LightStateWebSocketControllerFormProps) {
   const { data, saveData, setData } = props;
+  console.log("initially: ");
+  console.log(data);
 
   const changeLedOn = (event: React.ChangeEvent<HTMLInputElement>) => {
     setData({ led_on: event.target.checked }, saveData);
+  }
+  const changeVal = (event: React.ChangeEvent<{}>, value: any) => {
+    setData({ val: value }, saveData);
+  }
+
+  const setDat = (event: React.ChangeEvent<{}>) => {
+    setData({ val: 10 });
+    console.log(data);
+  }
+  const setSaveDat = (event: React.ChangeEvent<{}>) => {
+    setData({ val: 20 }, saveData);
+    console.log(data);
+  }
+  const setManDat = (event: React.ChangeEvent<{}>) => {
+    data.val = 30;
+    console.log(data);
+  }
+  const setManSaveDat = (event: React.ChangeEvent<{}>) => {
+    data.val = 30;
+    saveData();
+    console.log(data);
   }
 
   return (
@@ -57,6 +80,26 @@ function LightStateWebSocketControllerForm(props: LightStateWebSocketControllerF
         }
         label="LED State?"
       />
+          <Slider
+            value={data.val}
+            onChange={changeVal}
+            color="primary"
+          />
+          <Button variant="contained" color="primary" onClick={setDat}>
+          setData
+         </Button>
+           <Button variant="contained" color="primary" onClick={setSaveDat}>
+           setSaveData
+          </Button>
+           <Button variant="contained" color="primary" onClick={setManDat}>
+           setManData
+          </Button>
+           <Button variant="contained" color="primary" onClick={setManSaveDat}>
+           setManSaveData
+          </Button>
+          <Button variant="contained" color="primary" onClick={saveData}>
+          saveData
+         </Button>
     </ValidatorForm>
   );
 }

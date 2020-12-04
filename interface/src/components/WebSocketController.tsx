@@ -99,6 +99,7 @@ export function webSocketController<D, P extends WebSocketControllerProps<D>>(ws
       saveData = throttle(() => {
         const { ws, connected, data } = this.state;
         if (connected) {
+          console.log(data);
           ws.json(data);
         }
       }, wsThrottle);

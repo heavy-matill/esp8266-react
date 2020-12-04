@@ -1,5 +1,6 @@
 export interface LightState {
-  led_on: boolean;
+  led_on?: boolean;
+  val?: number;
 }
 export interface RGB {
   cmd?: number;

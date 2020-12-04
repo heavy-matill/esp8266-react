@@ -21,7 +21,7 @@
 #define RGB_SETTINGS_ENDPOINT_PATH "/rest/rgbState"
 #define RGB_SETTINGS_SOCKET_PATH "/ws/rgbState"
 #define RGB_SETTINGS_FILE "/config/rgbSettings.json"
-typedef void (*voidCmdProcessor)(String &cmd);// Create a type to point to a funciton.
+typedef void (*voidCmdProcessor)(String& cmd);  // Create a type to point to a funciton.
 void setColor(uint8_t r, uint8_t g, uint8_t b);
 class RGBState {
  public:
@@ -30,7 +30,7 @@ class RGBState {
   uint8_t r1, g1, b1;
   uint8_t r2, g2, b2;
   int16_t angle;
-  uint8_t thres, center, blur;
+  uint8_t center, blur;
   String cmdString;
 
   static void read(RGBState& settings, JsonObject& root) {
@@ -43,10 +43,9 @@ class RGBState {
     root["c2"]["r"] = settings.r2;
     root["c2"]["g"] = settings.g2;
     root["c2"]["b"] = settings.b2;
-    root["angle"]= settings.angle;
-    root["thres"]= settings.thres;
-    root["center"]= settings.center;
-    root["blur"]= settings.blur;
+    root["angle"] = settings.angle;
+    root["center"] = settings.center;
+    root["blur"] = settings.blur;
     Serial.println("read root:");
     serializeJsonPretty(root, Serial);
     Serial.println();
@@ -76,19 +75,36 @@ class RGBState {
         Serial.print("Unknown command: ");
         Serial.println(settings.cmd);
     }
+    JsonVariant val;
+    val = root["mode"];
+    if (!val.isNull())
+      settings.mode = val;
+    val = root["brightness"];
+    if (!val.isNull())
+      settings.brightness = val;
 
-    settings.mode = root["mode"] | DEFAULT_MODE;
-    settings.brightness = root["brightness"] | DEFAULT_BRIGHTNESS_STATE;
-    settings.r1 = root["c1"]["r"] | DEFAULT_OFF_STATE;
-    settings.g1 = root["c1"]["g"] | DEFAULT_OFF_STATE;
-    settings.b1 = root["c1"]["b"] | DEFAULT_OFF_STATE;
-    settings.r2 = root["c2"]["r"] | DEFAULT_OFF_STATE;
-    settings.g2 = root["c2"]["g"] | DEFAULT_OFF_STATE;
-    settings.b2 = root["c2"]["b"] | DEFAULT_OFF_STATE;
-    settings.angle = root["angle"] | DEFAULT_OFF_STATE;
-    settings.thres = root["thres"] | DEFAULT_OFF_STATE;
-    settings.blur = root["blur"] | DEFAULT_OFF_STATE;
-    settings.center = root["center"] | 50;
+
+    if (!root["c1"].isNull()) {      
+      settings.r1 = root["c1"]["r"] | DEFAULT_OFF_STATE;
+      settings.g1 = root["c1"]["g"] | DEFAULT_OFF_STATE;
+      settings.b1 = root["c1"]["b"] | DEFAULT_OFF_STATE;
+    }
+    if (!root["c2"].isNull()) {      
+      settings.r2 = root["c2"]["r"] | DEFAULT_OFF_STATE;
+      settings.g2 = root["c2"]["g"] | DEFAULT_OFF_STATE;
+      settings.b2 = root["c2"]["b"] | DEFAULT_OFF_STATE;
+    }
+    
+    val = root["angle"];
+    if (!val.isNull())
+      settings.angle = val;
+    val = root["blur"];
+    if (!val.isNull())
+      settings.blur = val;
+    val = root["center"];
+    if (!val.isNull())
+      settings.center = val;
+      
     return StateUpdateResult::CHANGED;
   }
 
@@ -130,13 +146,14 @@ class RGBStateService : public StatefulService<RGBState> {
                   AsyncMqttClient* mqttClient,
                   RGBMqttSettingsService* rgbMqttSettingsService);
   void begin();
+
  private:
   HttpEndpoint<RGBState> _httpEndpoint;
   MqttPubSub<RGBState> _mqttPubSub;
   WebSocketTxRx<RGBState> _webSocket;
   AsyncMqttClient* _mqttClient;
   RGBMqttSettingsService* _rgbMqttSettingsService;
-  FSPersistence<RGBState> _fsPersistence;  
+  FSPersistence<RGBState> _fsPersistence;
 
   void registerConfig();
   void onConfigUpdated();

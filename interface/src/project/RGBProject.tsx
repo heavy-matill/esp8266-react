@@ -28,6 +28,7 @@ class RGBProject extends Component<RouteComponentProps> {
           <Tab value={`/${PROJECT_PATH}/rgb/socket/dual`} label="RGB Dual" />
           <Tab value={`/${PROJECT_PATH}/rgb/socket/text`} label="RGB Text" />
           <Tab value={`/${PROJECT_PATH}/rgb/socket/special`} label="RGB Special" />
+          <Tab value={`/${PROJECT_PATH}/rgb/lsocket`} label="Light" />
           <Tab value={`/${PROJECT_PATH}/rgb/mqtt`} label="MQTT Controller" />
         </Tabs>
         <Switch>

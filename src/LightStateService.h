@@ -30,18 +30,25 @@
 class LightState {
  public:
   bool ledOn;
+  uint8_t val;
 
   static void read(LightState& settings, JsonObject& root) {
     root["led_on"] = settings.ledOn;
+    root["val"] = settings.val;
+    Serial.println("read root:");
+    serializeJsonPretty(root, Serial);
   }
 
   static StateUpdateResult update(JsonObject& root, LightState& lightState) {
-    boolean newState = root["led_on"] | DEFAULT_LED_STATE;
+    Serial.println("updated root:");
+    serializeJsonPretty(root, Serial);
+    lightState.val = root["val"];
+    boolean newState = root["led_on"] | DEFAULT_LED_STATE;    
     if (lightState.ledOn != newState) {
       lightState.ledOn = newState;
       return StateUpdateResult::CHANGED;
     }
-    return StateUpdateResult::UNCHANGED;
+    return StateUpdateResult::CHANGED;
   }
 
   static void haRead(LightState& settings, JsonObject& root) {

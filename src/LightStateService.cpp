@@ -63,7 +63,6 @@ void LightStateService::registerConfig() {
   doc["cmd_t"] = "~/set";
   doc["stat_t"] = "~/state";
   doc["schema"] = "json";
-  doc["brightness"] = false;
 
   String payload;
   serializeJson(doc, payload);
