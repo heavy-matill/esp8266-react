@@ -37,6 +37,17 @@ void FeaturesService::features(AsyncWebServerRequest* request) {
 #else
   root["upload_firmware"] = false;
 #endif
+// custom rgb features
+#if FT_ENABLED(FT_RGB_MATRIX)
+  root["rgb_matrix"] = true;
+#else
+  root["rgb_matrix"] = false;
+#endif
+#if FT_ENABLED(FT_RGB_LINE)
+  root["rgb_line"] = true;
+#else
+  root["rgb_line"] = false;
+#endif
   response->setLength();
   request->send(response);
 }

@@ -2,6 +2,7 @@
 #define Features_h
 
 #define FT_ENABLED(feature) feature
+#define FT_ENABLED2(feature) (feature == 1)
 
 // project feature off by default
 #ifndef FT_PROJECT
@@ -33,5 +34,16 @@
 #define FT_UPLOAD_FIRMWARE 0
 #endif
 
+// custom RGB features
+// matrix feature for e.g. displaying text 
+// off by default
+#ifndef FT_RGB_MATRIX
+#define FT_RGB_MATRIX 0
+#endif
+// line feature for custom animations along line and custom fill algorithms along line_xy 
+// on by default
+#ifndef FT_RGB_LINE
+#define FT_RGB_LINE 1
+#endif
 
 #endif

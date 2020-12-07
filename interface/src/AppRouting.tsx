@@ -16,8 +16,8 @@ import System from './system/System';
 
 import { PROJECT_PATH } from './api';
 import Mqtt from './mqtt/Mqtt';
-import { withFeatures, WithFeaturesProps } from './features/FeaturesContext';
-import { Features } from './features/types';
+import { withFeatures, WithFeaturesProps } from '././features/FeaturesContext';
+import { Features } from '././features/types';
 
 export const getDefaultRoute = (features: Features) => features.project ? `/${PROJECT_PATH}/` : "/wifi/";
 

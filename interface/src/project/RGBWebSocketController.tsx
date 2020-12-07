@@ -12,6 +12,7 @@ import { SectionContent, BlockFormControlLabel } from '../components';
 
 import { LightState, RGB, Color } from './types';
 import { CheckBox, DateRange } from '@material-ui/icons';
+import RGBColor2 from './RGBColor2'
 
 export const RGB_WEBSOCKET_URL = WEB_SOCKET_ROOT + "rgbState";
 
@@ -24,7 +25,7 @@ class RGBWebSocketController extends Component<RGBWebSocketControllerProps & Rou
   render() {
     return (
       <SectionContent title='WebSocket Controller' titleGutter>
-        {this.props.match.params.modeString == "single" && <WebSocketFormLoader {...this.props} render={props => (
+        {this.props.match.params.modeString == "single" && this.props.data != undefined && <WebSocketFormLoader {...this.props} render={props => (
           <RGBWebSocketControllerFormSingle {...props} />
         )} />}
         {this.props.match.params.modeString == "dual" && <WebSocketFormLoader {...this.props} render={props => (
@@ -33,8 +34,14 @@ class RGBWebSocketController extends Component<RGBWebSocketControllerProps & Rou
         {this.props.match.params.modeString == "text" && <WebSocketFormLoader {...this.props} render={props => (
           <RGBWebSocketControllerFormText {...props} />
         )} />}
+        {this.props.match.params.modeString == "rainbow" && <WebSocketFormLoader {...this.props} render={props => (
+          <RGBWebSocketControllerFormRainbow {...props} />
+        )} />}
         {this.props.match.params.modeString == "special" && <WebSocketFormLoader {...this.props} render={props => (
           <RGBWebSocketControllerFormSpecial {...props} />
+        )} />}
+        {this.props.match.params.modeString == "animation" && <WebSocketFormLoader {...this.props} render={props => (
+          <RGBWebSocketControllerFormAnimation {...props} />
         )} />}
       </SectionContent>
     )
@@ -48,7 +55,7 @@ type RGBWebSocketControllerFormProps = WebSocketFormProps<RGB>;
 function RGBWebSocketControllerFormMode(props: RGBWebSocketControllerFormProps) {
   const { data, saveData, setData } = props;
   const changeMode = (event: React.ChangeEvent<{}>, value: any) => {
-    setData({ mode: value });
+    setData({...data, mode: value });
   }
   return (
     <ValidatorForm onSubmit={saveData}>
@@ -72,11 +79,13 @@ function RGBWebSocketControllerFormSingle(props: RGBWebSocketControllerFormProps
   return (
     <div>
       <RGBWebSocketControllerFormColor1 {...props} />
+      <RGBWebSocketControllerFormSpeedColor {...props} />
     </div>
   );
 }
 
 function RGBWebSocketControllerFormDual(props: RGBWebSocketControllerFormProps) {
+  console.log("Dual mode = 4")
   props.data.mode = 4;
   const { data, saveData, setData } = props;
   return (
@@ -84,6 +93,8 @@ function RGBWebSocketControllerFormDual(props: RGBWebSocketControllerFormProps) 
       <RGBWebSocketControllerFormColor1 {...props} />
       <RGBWebSocketControllerFormColor2 {...props} />
       <RGBWebSocketControllerFormGradient {...props} />
+      <RGBWebSocketControllerFormSpeedAngle {...props} />
+      <RGBWebSocketControllerFormSpeedColor {...props} />
     </div>
   );
 }
@@ -96,9 +107,23 @@ function RGBWebSocketControllerFormText(props: RGBWebSocketControllerFormProps) 
     </div>
   );
 }
-function RGBWebSocketControllerFormSpecial(props: RGBWebSocketControllerFormProps) {
-  console.log("RGBWebSocketControllerFormSpecial mode = 5")
+function RGBWebSocketControllerFormRainbow(props: RGBWebSocketControllerFormProps) {
+  console.log("Rainbow mode = 5")
   props.data.mode = 5;
+  const { data, saveData, setData } = props;
+  return (
+    <div>
+      <RGBWebSocketControllerFormMode {...props} />
+      <RGBWebSocketControllerFormGradient {...props} />
+      <RGBWebSocketControllerFormSpeedAngle {...props} />
+      <RGBWebSocketControllerFormSpeedColor {...props} />
+      <RGBWebSocketControllerFormButtons {...props} />
+    </div>
+  );
+}
+function RGBWebSocketControllerFormSpecial(props: RGBWebSocketControllerFormProps) {
+  console.log("Special mode = 6")
+  props.data.mode = 6;
   const { data, saveData, setData } = props;
   return (
     <div>
@@ -108,47 +133,56 @@ function RGBWebSocketControllerFormSpecial(props: RGBWebSocketControllerFormProp
     </div>
   );
 }
+function RGBWebSocketControllerFormAnimation(props: RGBWebSocketControllerFormProps) {
+  const { data, saveData, setData } = props;
+  return (
+    <div>
+      <RGBWebSocketControllerFormSpeedAngle {...props} />
+    </div>
+  );
+}
 
 function RGBWebSocketControllerFormColor1(props: RGBWebSocketControllerFormProps) {
   const { data, saveData, setData } = props;
   const changeColor1 = (event: any) => {
-    console.log("changeColor1")
     let rgb = decomposeColor(event.target.value).values;
-    setData({ c1: { r: rgb[0], g: rgb[1], b: rgb[2] } }, saveData);
+    setData({ ...data, c1: { r: rgb[0], g: rgb[1], b: rgb[2] } }, saveData);
   }
   return (
-    <ValidatorForm onSubmit={saveData}>
+    <div>
       <Typography variant="body1">
         Color Input 1
         </Typography>
-      <Typography
+      <div
         style={{
           backgroundColor:
-            "rgb(" + [data.c1!.r, data.c1!.g, data.c1!.b].join(',') + ")",
+            "rgb(" + [data.c1!.r | 0, data.c1!.g | 0, data.c1!.b | 0].join(',') + ")",
         }}>
         <Input
           id="c1"
           type="color"
+          value={
+            rgbToHex("rgb(" + [data.c1!.r, data.c1!.g, data.c1!.b].join(',') + ")")
+          }
           fullWidth={true}
           onChange={changeColor1}
-        /></Typography>
-    </ValidatorForm>
+        /></div>
+    </div>
   );
 }
 
 function RGBWebSocketControllerFormColor2(props: RGBWebSocketControllerFormProps) {
   const { data, saveData, setData } = props;
   const changeColor2 = (event: any) => {
-    console.log("changeColor2")
     let rgb = decomposeColor(event.target.value).values;
-    setData({ c2: { r: rgb[0], g: rgb[1], b: rgb[2] } }, saveData);
+    setData({...data,  c2: { r: rgb[0], g: rgb[1], b: rgb[2] } }, saveData);
   }
   return (
     <ValidatorForm onSubmit={saveData}>
       <Typography variant="body1">
         Color Input 2
         </Typography>
-      <Typography
+      <div
         style={{
           backgroundColor:
             "rgb(" + [data.c2!.r, data.c2!.g, data.c2!.b].join(',') + ")",
@@ -156,9 +190,12 @@ function RGBWebSocketControllerFormColor2(props: RGBWebSocketControllerFormProps
         <Input
           id="c2"
           type="color"
+          value={
+            rgbToHex("rgb(" + [data.c2!.r, data.c2!.g, data.c2!.b].join(',') + ")")
+          }
           fullWidth={true}
           onChange={changeColor2}
-        /></Typography>
+        /></div>
     </ValidatorForm>
   );
 }
@@ -168,15 +205,15 @@ function RGBWebSocketControllerFormGradient(props: RGBWebSocketControllerFormPro
 
   const changeAngle = (event: React.ChangeEvent<{}>, value: any) => {
     if (value != data.angle)
-    setData({ angle: value }, saveData);
+      setData({ ...data, angle: value }, saveData);
   }
   const changeBlur = (event: React.ChangeEvent<{}>, value: any) => {
     if (value != data.blur)
-    setData({ blur: value }, saveData);
+      setData({...data,  blur: value }, saveData);
   }
   const changeCenter = (event: React.ChangeEvent<{}>, value: any) => {
     if (value != data.center)
-      setData({ center: value }, saveData);
+      setData({ ...data, center: value }, saveData);
   }
 
   return (
@@ -186,30 +223,139 @@ function RGBWebSocketControllerFormGradient(props: RGBWebSocketControllerFormPro
         </Typography>
       <Slider
         max={360}
-        defaultValue={data.angle}
+        value={data.angle}
         valueLabelDisplay="auto"
         color="primary"
         onChange={changeAngle}
+        marks=
+        {[{
+          value: 0,
+          label: '0°',
+        }, {
+          value: 45,
+          label: '45°',
+        }, {
+          value: 90,
+          label: '90°',
+        }, {
+          value: 135,
+          label: '135°',
+        }, {
+          value: 180,
+          label: '180°',
+        }, {
+          value: 225,
+          label: '225°',
+        }, {
+          value: 270,
+          label: '270°',
+        }, {
+          value: 315,
+          label: '315°',
+        }, {
+          value: 360,
+          label: '360°',
+        }]}
       />
       <Typography variant="body1">
         Blur
         </Typography>
       <Slider
         max={100}
-        defaultValue={data.blur}
+        value={data.blur}
         valueLabelDisplay="auto"
         color="primary"
         onChange={changeBlur}
+        marks=
+        {[{
+          value: 0,
+          label: '0%',
+        }, {
+          value: 50,
+          label: '50%',
+        }, {
+          value: 100,
+          label: '100%',
+        }]}
       />
       <Typography variant="body1">
         Center
         </Typography>
       <Slider
         max={100}
-        defaultValue={data.center}
+        value={data.center}
         valueLabelDisplay="auto"
         color="primary"
         onChange={changeCenter}
+        marks=
+        {[{
+          value: 0,
+          label: '0%',
+        }, {
+          value: 50,
+          label: '50%',
+        }, {
+          value: 100,
+          label: '100%',
+        }]}
+      />
+    </div>
+  );
+}
+function RGBWebSocketControllerFormSpeedAngle(props: RGBWebSocketControllerFormProps) {
+  const { data, saveData, setData, handleValueChange } = props;
+
+  const changeSpeedAngle = (event: React.ChangeEvent<{}>, value: any) => {
+    if (value != data.speed_angle)
+      setData({...data,  speed_angle: value }, saveData);
+  }
+
+  return (
+    <div>
+      <Typography variant="body1">
+        Angle animation speed
+      </Typography>
+      <Slider
+        min={-100}
+        max={100}
+        value={data.speed_angle}
+        valueLabelDisplay="auto"
+        color="primary"
+        onChange={changeSpeedAngle}
+        marks=
+        {[{
+          value: 0,
+          label: 'OFF',
+        }]}
+      />
+    </div>
+  );
+}
+function RGBWebSocketControllerFormSpeedColor(props: RGBWebSocketControllerFormProps) {
+  const { data, saveData, setData, handleValueChange } = props;
+
+  const changeSpeedColor = (event: React.ChangeEvent<{}>, value: any) => {
+    if (value != data.speed_color)
+      setData({...data,  speed_color: value }, saveData);
+  }
+
+  return (
+    <div>
+      <Typography variant="body1">
+        Color animation speed
+      </Typography>
+      <Slider
+        min={-100}
+        max={100}
+        value={data.speed_color}
+        valueLabelDisplay="auto"
+        color="primary"
+        onChange={changeSpeedColor}
+        marks=
+        {[{
+          value: 0,
+          label: 'OFF',
+        }]}
       />
     </div>
   );

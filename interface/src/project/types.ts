@@ -7,11 +7,13 @@ export interface RGB {
   mode?: number;
   modeString?: string;
   brightness?: number
-  c1?: Color;
-  c2?: Color;
+  c1: Color;
+  c2: Color;
   angle?: number;
   blur?: number;
   center?: number;
+  speed_angle?: number;
+  speed_color?: number;
 }
 export interface Color {
   r: number;

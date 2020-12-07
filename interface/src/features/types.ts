@@ -5,4 +5,6 @@ export interface Features {
   ntp: boolean;
   ota: boolean;
   upload_firmware: boolean;
+  rgb_matrix: boolean;
+  rgb_line: boolean;
 }
